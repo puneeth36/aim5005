@@ -1,4 +1,4 @@
-from aim5005.features import MinMaxScaler, StandardScaler
+from aim5005.features import MinMaxScaler, StandardScaler, LabelEncoder
 import numpy as np
 import unittest
 from unittest.case import TestCase
@@ -63,6 +63,32 @@ class TestFeatures(TestCase):
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
 
     # TODO: Add a test of your own below this line
+
+    # def test_standard_scaler_custom(self):
+    #     scaler = StandardScaler()
+    #     data = [[2, 4], [4, 8], [6, 12], [8, 16]]
+    #     scaler.fit(data)
+    #     result = scaler.transform(data)
+    #     expected = np.array([[-1.3416, -1.3416], [-0.4472, -0.4472], [0.4472, 0.4472], [1.3416, 1.3416]])
+        
+    #     assert np.allclose(result, expected, atol=1e-3), "Custom test for StandardScaler failed."
+
+    def test_standard_scaler(self):
+        X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        assert np.allclose(np.mean(X_scaled, axis=0), 0, atol=1e-6)
+        
+    def test_label_encoder(self):
+        encoder = LabelEncoder()
+        labels = ["cat", "dog", "fish", "cat", "dog"]
+        encoder.fit(labels)
+        result = encoder.transform(labels)
+        expected = [0, 1, 2, 0, 1]
+        
+        assert result == expected, f"LabelEncoder failed. Expected {expected}, got {result}"
+
     
 if __name__ == '__main__':
     unittest.main()
