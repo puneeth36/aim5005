@@ -47,22 +47,41 @@ class MinMaxScaler:
 class StandardScaler:
     def __init__(self):
         self.mean = None
-        self.std = None  # Added standard deviation attribute
+        self.std = None  
 
     def fit(self, y):
-        """Compute the mean and standard deviation from the data."""
-        y = np.array(y)
-        self.mean = y.mean()
-        self.std = y.std()
+        """Compute the mean and standard deviation for each feature."""
+        y = np.array(y) 
+        self.mean = np.mean(y, axis=0) 
+        self.std = np.std(y, axis=0, ddof=0)
+
+        self.std = np.where(self.std == 0, 1, self.std)
 
     def transform(self, y):
         """Standardize the data using the computed mean and std."""
         if self.mean is None or self.std is None:
-            raise ValueError("Scaler has not been fitted yet. Call fit(X) first.")
-        y = np.array(y)
-        return (y - self.mean) / self.std
+            raise ValueError("Scaler has not been fitted yet. Call fit(y) first.")
+        
+        y = np.array(y)  
+        return (y - self.mean) / self.std 
 
     def fit_transform(self, y):
         """Convenience method to fit and transform in one step."""
+        self.fit(y)
+        return self.transform(y)
+
+
+class LabelEncoder:
+    def __init__(self):
+        self.classes_ = {}
+
+    def fit(self, y):
+        unique_labels = sorted(set(y))
+        self.classes_ = {label: idx for idx, label in enumerate(unique_labels)}
+
+    def transform(self, y):
+        return [self.classes_[label] for label in y]
+
+    def fit_transform(self, y):
         self.fit(y)
         return self.transform(y)
