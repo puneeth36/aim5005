@@ -64,15 +64,6 @@ class TestFeatures(TestCase):
 
     # TODO: Add a test of your own below this line
 
-    # def test_standard_scaler_custom(self):
-    #     scaler = StandardScaler()
-    #     data = [[2, 4], [4, 8], [6, 12], [8, 16]]
-    #     scaler.fit(data)
-    #     result = scaler.transform(data)
-    #     expected = np.array([[-1.3416, -1.3416], [-0.4472, -0.4472], [0.4472, 0.4472], [1.3416, 1.3416]])
-        
-    #     assert np.allclose(result, expected, atol=1e-3), "Custom test for StandardScaler failed."
-
     def test_standard_scaler(self):
         X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         scaler = StandardScaler()
