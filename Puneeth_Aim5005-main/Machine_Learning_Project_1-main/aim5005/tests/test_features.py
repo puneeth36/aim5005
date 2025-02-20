@@ -64,12 +64,14 @@ class TestFeatures(TestCase):
 
     # TODO: Add a test of your own below this line
 
-    def test_standard_scaler(self):
-        X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    def test_standard_scaler_custom(self):
         scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-
-        assert np.allclose(np.mean(X_scaled, axis=0), 0, atol=1e-6)
+        data = [[2, 4], [4, 8], [6, 12], [8, 16]]
+        scaler.fit(data)
+        result = scaler.transform(data)
+        expected = np.array([[-1.3416, -1.3416], [-0.4472, -0.4472], [0.4472, 0.4472], [1.3416, 1.3416]])
+        
+        assert np.allclose(result, expected, atol=1e-3), "Custom test for StandardScaler failed."
         
     def test_label_encoder(self):
         encoder = LabelEncoder()
@@ -78,8 +80,67 @@ class TestFeatures(TestCase):
         result = encoder.transform(labels)
         expected = [0, 1, 2, 0, 1]
         
-        assert result == expected, f"LabelEncoder failed. Expected {expected}, got {result}"
+        assert np.array_equal(result, expected), f"LabelEncoder failed. Expected {expected}, got {result}"
 
+    def test_label_encoder_fit(self):
+        le = LabelEncoder()
+        y = np.array(["cat", "dog", "fish", "dog", "cat", "fish"])
+        le.fit(y)
+
+        assert set(le.classes_) == {"cat", "dog", "fish"}
+        assert le.class_to_index == {"cat": 0, "dog": 1, "fish": 2}
+
+
+    def test_label_encoder_transform(self):
+        le = LabelEncoder()
+        y = np.array(["cat", "dog", "fish", "dog", "cat", "fish"])
+        le.fit(y)
+        y_encoded = le.transform(y)
+
+        assert y_encoded.tolist() == [0, 1, 2, 1, 0, 2]  # Matches assigned indices
+
+
+    def test_label_encoder_fit_transform(self):
+        le = LabelEncoder()
+        y = np.array(["apple", "banana", "apple", "orange", "banana"])
+        y_encoded = le.fit_transform(y)
+
+        assert len(le.classes_) == 3
+        assert y_encoded.tolist() == [0, 1, 0, 2, 1]  # Checks for consistency
+
+
+    def test_label_encoder_unseen_value(self):
+        le = LabelEncoder()
+        y_train = np.array(["red", "blue", "green"])
+        le.fit(y_train)
+
+        y_test = np.array(["yellow", "red"])
+        try:
+            le.transform(y_test)
+            assert False, "Expected error for unseen category"
+        except KeyError:
+            pass 
+
+
+    def test_label_encoder_empty_input(self):
+        le = LabelEncoder()
+        y = np.array([])
+
+        le.fit(y)
+        assert le.classes_.size == 0 
+
+        y_encoded = le.transform(y)
+        assert y_encoded.size == 0 
+
+
+    def test_label_encoder_numeric_labels(self):
+        le = LabelEncoder()
+        y = np.array([10, 20, 10, 30, 20, 30])
+        y_encoded = le.fit_transform(y)
+
+        assert len(le.classes_) == 3
+        assert y_encoded.tolist() == [0, 1, 0, 2, 1, 2]  
+        
     
 if __name__ == '__main__':
     unittest.main()
