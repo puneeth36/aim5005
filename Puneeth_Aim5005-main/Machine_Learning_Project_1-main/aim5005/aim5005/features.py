@@ -71,17 +71,23 @@ class StandardScaler:
         return self.transform(y)
 
 
+import numpy as np
+
 class LabelEncoder:
     def __init__(self):
-        self.classes_ = {}
+        self.classes_ = np.array([])  
+        self.class_to_index = {} 
 
     def fit(self, y):
-        unique_labels = sorted(set(y))
-        self.classes_ = {label: idx for idx, label in enumerate(unique_labels)}
+        """Finds unique class labels and assigns them indices."""
+        self.classes_ = np.array(sorted(set(y)))
+        self.class_to_index = {label: idx for idx, label in enumerate(self.classes_)} 
+        return self
 
     def transform(self, y):
-        return [self.classes_[label] for label in y]
+        """Transforms labels into numerical indices."""
+        return np.array([self.class_to_index[label] for label in y]) 
 
     def fit_transform(self, y):
-        self.fit(y)
-        return self.transform(y)
+        """Fits the labels and then transforms them."""
+        return self.fit(y).transform(y)
